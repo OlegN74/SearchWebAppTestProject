@@ -4,6 +4,6 @@ namespace SearchEngine.Contract
 {
     public interface ISearchEngine : ISearchResultLoader, ISearchResultParser, ISearchResultSaver
     {
-        bool DoWork(string searchString);
+        IEnumerable<SearchResult> DoWork(string searchString);
     }
 }

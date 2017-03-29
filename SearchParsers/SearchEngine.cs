@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using log4net.Repository.Hierarchy;
 using SearchEngine.Contract;
 
 namespace SearchEngine.Implementation
@@ -9,7 +11,7 @@ namespace SearchEngine.Implementation
         private readonly ISearchResultLoader _loader;
         private readonly ISearchResultParser _parser;
         private readonly ISearchResultSaver _saver;
-        private ISearchEngineConfiguration _config;
+        private readonly ISearchEngineConfiguration _config;
         public string SearchEngineName { get; private set; }
 
         public SearchEngine()
@@ -45,27 +47,23 @@ namespace SearchEngine.Implementation
             _loader.Configure(searchString, config);
         }
 
-        public bool DoWork(string searchString)
+        public IEnumerable<SearchResult> DoWork(string searchString)
         {
-            bool state = false;
-            IEnumerable<SearchResult> result = new List<SearchResult>();
+            return new List<SearchResult>(){new SearchResult()};
+
+            IEnumerable<SearchResult> result;
             try
             {
                 Configure(searchString, _config);
                 string data = LoadData();
-                state = TryParse(data, out result);
-                if (state)
-                {
-                    state = SaveData(result);
-                }
+                TryParse(data, out result);
             }
             catch (Exception e)
             {
-                state = false;
                 throw;
             }
 
-            return state;
+            return result;
         }
     }
 }

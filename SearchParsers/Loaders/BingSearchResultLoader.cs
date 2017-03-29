@@ -17,6 +17,7 @@ namespace SearchEngine.Implementation.Loaders
             _url = String.Format(CultureInfo.InvariantCulture, urlTemplate, searchString, config.KeyApi, config.MaxResultCount);
 
             Logger.Debug("We are in BingSearchResultLoader.Configure");
+            Logger.DebugFormat(CultureInfo.InvariantCulture, "URL: {0}", _url);
         }
 
         public override string LoadData()

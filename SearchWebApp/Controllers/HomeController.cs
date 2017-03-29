@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using log4net;
 using Microsoft.Practices.Unity;
 using SearchEngine.Contract;
+using SearchWebApp.DAL;
+using SearchWebApp.Extentions;
+using SearchWebApp.Models;
 
 namespace SearchWebApp.Controllers
 {
     public class HomeController : Controller
     {
-        private static log4net.ILog Log { get; set; }
-
         ILog _log = log4net.LogManager.GetLogger(typeof(HomeController));
 
         private List<SearchEngine.Implementation.SearchEngine> _searchEngines;
@@ -23,12 +26,66 @@ namespace SearchWebApp.Controllers
             _searchEngines = searchEngines.ToList();
         }
 
-        public ActionResult Index()
-        {
+       private async Task<List<SearchResult>> GetSearchResultData(string searchStringFromUI)
+       {
+            var result = new List<SearchResult>();
+
+            var tasks = new List<Task<IEnumerable<SearchResult>>>(_searchEngines.Count);
             foreach (var engine in _searchEngines)
             {
-                engine.DoWork(HttpUtility.UrlEncode("test search string"));
+                Task<IEnumerable<SearchResult>> task = new Task<IEnumerable<SearchResult>>(() => engine.DoWork(HttpUtility.UrlEncode(searchStringFromUI)));
+                tasks.Add(task);
+                task.Start();
             }
+
+            while (tasks.Count > 0)
+            {
+                var t = await Task.WhenAny(tasks);
+                tasks.Remove(t);
+                try
+                {
+                    IEnumerable<SearchResult> resultTask = t.Result;
+                    result.AddRange(resultTask.ToList());
+                    if (result.Count >= (ConfigurationManager.AppSettings["NeedSearchElements"] == null
+                                ? 10
+                                : int.Parse(ConfigurationManager.AppSettings["NeedSearchElements"])))
+                    {
+                        tasks.Clear();
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+
+                }
+                catch (Exception exc)
+                {
+                    //Handle(exc); 
+
+                }
+            }
+
+            return result;
+        }
+
+        public ActionResult Index()
+        {
+            string searchStringFromUI = "test search string";
+
+            using (var ctx = new SearchEngineContext())
+            {
+                SearchResultViewModel stud = new SearchResultViewModel { SearchEngineName = "Google", Subject="Test subject", SearchWords = searchStringFromUI };
+
+                ctx.SearchResults.Add(stud);
+                ctx.SaveChanges();
+            }
+
+
+
+            //IEnumerable<SearchResult> resultData = new List<SearchResult>();
+
+            //var result = GetSearchResultData(searchStringFromUI);
+            
+
             return View();
         }
 
