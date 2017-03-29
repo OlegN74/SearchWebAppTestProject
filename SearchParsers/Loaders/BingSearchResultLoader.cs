@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using SearchEngine.Contract;
 
 namespace SearchEngine.Implementation.Loaders
@@ -25,6 +27,13 @@ namespace SearchEngine.Implementation.Loaders
             string result = String.Empty;
             Logger.Debug("We are in BingSearchResultLoader.Configure");
 
+            if (!String.IsNullOrWhiteSpace(_url))
+            {
+                using (WebClient client = new WebClient())
+                {
+                    result = client.DownloadString(_url);
+                }
+            }
             return result;
         }
     }

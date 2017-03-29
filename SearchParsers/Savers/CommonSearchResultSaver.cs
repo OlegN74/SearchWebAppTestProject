@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Globalization;
 using log4net;
 using SearchEngine.Contract;
@@ -28,7 +29,11 @@ namespace SearchEngine.Implementation.Savers
             bool result = true;
 
             Logger.Debug("We are in CommonSearchResultSaver.SaveData");
-
+            using (var dbContext = new SearchEngineContext())
+            {
+                dbContext.SearchResults.AddRange(data);
+                int code = dbContext.SaveChanges();
+            }
             return result;
         }
     }

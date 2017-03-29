@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using log4net;
 using Microsoft.Practices.Unity;
 using SearchEngine.Contract;
-using SearchWebApp.DAL;
-using SearchWebApp.Extentions;
-using SearchWebApp.Models;
 
 namespace SearchWebApp.Controllers
 {
@@ -26,42 +23,40 @@ namespace SearchWebApp.Controllers
             _searchEngines = searchEngines.ToList();
         }
 
-       private async Task<List<SearchResult>> GetSearchResultData(string searchStringFromUI)
-       {
+        public HomeController()
+        {
+        }
+
+        private List<SearchResult> GetSearchResultData(string searchStringFromUI)
+        {
+            var cancelTokenSource = new CancellationTokenSource();
+            var token = cancelTokenSource.Token;
+
             var result = new List<SearchResult>();
 
-            var tasks = new List<Task<IEnumerable<SearchResult>>>(_searchEngines.Count);
+            Task<IEnumerable<SearchResult>>[] tasks = new Task<IEnumerable<SearchResult>>[_searchEngines.Count];
+            int i = 0;
             foreach (var engine in _searchEngines)
             {
-                Task<IEnumerable<SearchResult>> task = new Task<IEnumerable<SearchResult>>(() => engine.DoWork(HttpUtility.UrlEncode(searchStringFromUI)));
-                tasks.Add(task);
-                task.Start();
+                tasks[i] = Task.Factory.StartNew(() => engine.DoWork(HttpUtility.UrlEncode(searchStringFromUI)),
+                token)
+                ;
+                ++i;
             }
 
-            while (tasks.Count > 0)
+            try
             {
-                var t = await Task.WhenAny(tasks);
-                tasks.Remove(t);
-                try
-                {
-                    IEnumerable<SearchResult> resultTask = t.Result;
-                    result.AddRange(resultTask.ToList());
-                    if (result.Count >= (ConfigurationManager.AppSettings["NeedSearchElements"] == null
-                                ? 10
-                                : int.Parse(ConfigurationManager.AppSettings["NeedSearchElements"])))
-                    {
-                        tasks.Clear();
-                    }
-                }
-                catch (OperationCanceledException)
-                {
-
-                }
-                catch (Exception exc)
-                {
-                    //Handle(exc); 
-
-                }
+                int index = Task.WaitAny(tasks);
+                result = tasks[index].Result.ToList();
+                cancelTokenSource.Cancel();
+            }
+            catch (OperationCanceledException ex)
+            {
+                _log.Info("Operation aborted.");
+            }
+            finally
+            {
+                cancelTokenSource.Dispose();
             }
 
             return result;
@@ -71,19 +66,9 @@ namespace SearchWebApp.Controllers
         {
             string searchStringFromUI = "test search string";
 
-            using (var ctx = new SearchEngineContext())
-            {
-                SearchResultViewModel stud = new SearchResultViewModel { SearchEngineName = "Google", Subject="Test subject", SearchWords = searchStringFromUI };
+            IEnumerable<SearchResult> resultData = new List<SearchResult>();
 
-                ctx.SearchResults.Add(stud);
-                ctx.SaveChanges();
-            }
-
-
-
-            //IEnumerable<SearchResult> resultData = new List<SearchResult>();
-
-            //var result = GetSearchResultData(searchStringFromUI);
+            var result = GetSearchResultData(searchStringFromUI);
             
 
             return View();

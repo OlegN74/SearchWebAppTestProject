@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlTypes;
-using System.Linq;
-using System.Web;
 using SearchEngine.Contract;
-using SearchWebApp.Models;
 
-namespace SearchWebApp.DAL
+namespace SearchEngine.Implementation.Savers
 {
     public class SearchEngineContext: DbContext
     {
-        public SearchEngineContext() : base("DefaultConnection")
+        public SearchEngineContext()
         {
         }
 
-        public DbSet<SearchResultViewModel> SearchResults { get; set; }
+        public DbSet<SearchResult> SearchResults { get; set; }
 
         public override int SaveChanges()
         {
@@ -25,7 +21,7 @@ namespace SearchWebApp.DAL
 
         private void UpdateDates()
         {
-            foreach (var change in ChangeTracker.Entries<SearchResultViewModel>())
+            foreach (var change in ChangeTracker.Entries<SearchResult>())
             {
                 var values = change.CurrentValues;
                 foreach (var name in values.PropertyNames)

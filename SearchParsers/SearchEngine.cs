@@ -49,14 +49,22 @@ namespace SearchEngine.Implementation
 
         public IEnumerable<SearchResult> DoWork(string searchString)
         {
-            return new List<SearchResult>(){new SearchResult()};
-
             IEnumerable<SearchResult> result;
             try
             {
                 Configure(searchString, _config);
                 string data = LoadData();
-                TryParse(data, out result);
+                if (TryParse(data, out result) && result != null)
+                {
+                    foreach (var item in result.ToList())
+                    {
+                        item.SearchEngineName = SearchEngineName;
+                        item.SearchWords = searchString;
+                    }
+
+                    _saver.SaveData(result);
+
+                }
             }
             catch (Exception e)
             {
