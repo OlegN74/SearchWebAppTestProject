@@ -40,18 +40,18 @@ namespace SearchEngine.Implementation
             return _saver.SaveData(data);
         }
 
-        public void Configure()
+        public void Configure(string searchString, ISearchEngineConfiguration config)
         {
-            
+            _loader.Configure(searchString, config);
         }
 
-        public bool DoWork()
+        public bool DoWork(string searchString)
         {
             bool state = false;
             IEnumerable<SearchResult> result = new List<SearchResult>();
             try
             {
-                Configure();
+                Configure(searchString, _config);
                 string data = LoadData();
                 state = TryParse(data, out result);
                 if (state)

@@ -11,12 +11,15 @@ namespace SearchEngine.Implementation.Configuration
     {
         public string KeyApi { get; set; }
 
+        public int MaxResultCount { get; set; }
+
         public GoogleSearchEngineConfiguration()
         {
         }
 
-        public GoogleSearchEngineConfiguration(string keyApi)
+        public GoogleSearchEngineConfiguration(int maxResultCount, string keyApi)
         {
+            MaxResultCount = maxResultCount;
             KeyApi = keyApi;
         }
     }

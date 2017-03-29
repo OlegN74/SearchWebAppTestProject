@@ -27,7 +27,7 @@ namespace SearchWebApp.Controllers
         {
             foreach (var engine in _searchEngines)
             {
-                engine.DoWork();
+                engine.DoWork(HttpUtility.UrlEncode("test search string"));
             }
             return View();
         }

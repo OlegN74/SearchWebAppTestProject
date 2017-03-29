@@ -8,6 +8,7 @@ namespace SearchEngine.Contract
 {
     public interface ISearchEngineConfiguration
     {
+        int MaxResultCount { get; set; }
         string KeyApi { get; set; }
     }
 }

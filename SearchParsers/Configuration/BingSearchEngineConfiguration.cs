@@ -11,13 +11,17 @@ namespace SearchEngine.Implementation.Configuration
     {
         public string KeyApi { get; set; }
 
+        public int MaxResultCount { get; set; }
+
         public BingSearchEngineConfiguration()
         {
         }
 
-        public BingSearchEngineConfiguration(string keyApi)
+        public BingSearchEngineConfiguration(int maxResultCount, string keyApi)
         {
+            MaxResultCount = maxResultCount;
             KeyApi = keyApi;
         }
+
     }
 }

@@ -4,7 +4,6 @@ namespace SearchEngine.Contract
 {
     public interface ISearchEngine : ISearchResultLoader, ISearchResultParser, ISearchResultSaver
     {
-        void Configure();
-        bool DoWork();
+        bool DoWork(string searchString);
     }
 }

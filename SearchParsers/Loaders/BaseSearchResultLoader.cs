@@ -26,11 +26,12 @@ namespace SearchEngine.Implementation.Loaders
             Logger = logger;
         }
 
-        public virtual void Configure()
+        public virtual void Configure(string searchString, ISearchEngineConfiguration config)
         {
             Logger.Debug("We are in BaseSearchResultLoader.Configure");
         }
 
         public abstract string LoadData();
+
     }
 }
