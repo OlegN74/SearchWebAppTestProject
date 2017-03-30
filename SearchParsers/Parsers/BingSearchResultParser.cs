@@ -26,7 +26,7 @@ namespace SearchEngine.Implementation.Parsers
                     foreach (dynamic item in dynObj.webPages.value)
                     {
                         var resultItem = new SearchResult();
-                        //resultItem.Published = DateTime.Parse(item.dateLastCrawled.Value);
+                        resultItem.Published = item.dateLastCrawled.Value;
                         resultItem.RawDara = item.ToString();
                         resultItem.Subject = item.name.Value;
                         resultItem.Text = item.snippet.Value;
