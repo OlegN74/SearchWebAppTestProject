@@ -62,7 +62,7 @@ namespace SearchEngine.Implementation
                         item.SearchWords = searchString;
                     }
 
-                    _saver.SaveData(result);
+                    //_saver.SaveData(result);
 
                 }
             }
