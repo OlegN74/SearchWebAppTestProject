@@ -64,7 +64,7 @@ namespace SearchWebApp.Controllers
 
         public ActionResult Index()
         {
-            string searchStringFromUI = "test search string";
+            string searchStringFromUI = "elephant";
 
             IEnumerable<SearchResult> resultData = new List<SearchResult>();
 

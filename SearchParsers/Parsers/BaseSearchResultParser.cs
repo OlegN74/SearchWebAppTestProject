@@ -21,6 +21,6 @@ namespace SearchEngine.Implementation.Parsers
             Logger = logger;
         }
 
-        public abstract bool TryParse(string inputData, out IEnumerable<SearchResult> result);
+        public abstract bool TryParse(string content, out IEnumerable<SearchResult> result);
     }
 }

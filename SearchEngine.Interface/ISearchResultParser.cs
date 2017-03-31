@@ -4,6 +4,6 @@ namespace SearchEngine.Contract
 {
     public interface ISearchResultParser
     {
-        bool TryParse(string inputData, out IEnumerable<SearchResult> result);
+        bool TryParse(string content, out IEnumerable<SearchResult> result);
     }
 }

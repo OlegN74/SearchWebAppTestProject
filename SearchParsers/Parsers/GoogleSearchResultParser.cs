@@ -11,15 +11,15 @@ namespace SearchEngine.Implementation.Parsers
 {
     public class GoogleSearchResultParser: BaseSearchResultParser
     {
-        public override bool TryParse(string inputData, out IEnumerable<SearchResult> resultsList)
+        public override bool TryParse(string content, out IEnumerable<SearchResult> resultsList)
         {
-            bool result = !String.IsNullOrWhiteSpace(inputData);
+            bool result = !String.IsNullOrWhiteSpace(content);
             Logger.Debug("We are in GoogleSearchResultParser.TryParse");
 
             var resultsList1 = new List<SearchResult>();
             if (result)
             {
-                dynamic dynObj = JsonConvert.DeserializeObject(inputData);
+                dynamic dynObj = JsonConvert.DeserializeObject(content);
 
                 if (dynObj != null)
                 {
