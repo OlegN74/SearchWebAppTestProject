@@ -123,7 +123,7 @@ namespace SearchWebApp.Controllers
             _queueResults.CopyTo(result, 0);
             _log.DebugFormat(CultureInfo.InvariantCulture, "Found {0} items.", result.Length);
 
-            _saver.SaveData(result.ToList());
+            _saver.SaveData(result.Where(x => x != null).ToList());
             return result;
         }
 
